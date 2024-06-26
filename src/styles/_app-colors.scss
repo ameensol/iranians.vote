@@ -1,0 +1,76 @@
+$white: #ffffff;
+$white-rgb: hexToRGB($white);
+$black: #000000;
+$black-rgb: hexToRGB($black);
+
+$background-primary-light: #ffffff;
+$background-primary-main: #ffffff;
+$background-primary-dark: #ffffff;
+
+$background-secondary-light: #ffffff;
+$background-secondary-main: #ffffff;
+$background-secondary-dark: #ffffff;
+
+/* status colors */
+
+$success-light: #edfff2;
+$success-main: #5cc56e;
+$success-dark: #278337;
+
+$error-light: #fff2f2;
+$error-main: #e46962;
+$error-dark: #b3261e;
+
+$warning-light: #fff9e9;
+$warning-main: #f6851b;
+$warning-dark: #e6661f;
+
+$info-light: #eff2ff;
+$info-main: #40c4ff;
+$info-dark: #0000ff;
+
+/* brand colors */
+
+$primary-light: #80ED99;
+$primary-main: #80ED99;
+$primary-dark: #80ED99;
+
+$primary-light-rgb: hexToRGB($primary-light);
+$primary-main-rgb: hexToRGB($primary-main);
+$primary-dark-rgb: hexToRGB($primary-dark);
+
+$secondary-light: #c2c9dc;
+$secondary-main: #8d91a5;
+$secondary-dark: #5b6271;
+
+/* typography colors */
+
+$text-primary-light: #000000;
+$text-primary-main: #000000;
+$text-primary-dark: #000000;
+
+$text-secondary-light: rgba($text-primary-main, 0.6);
+$text-secondary-main: rgba($text-primary-main, 0.6);
+$text-secondary-dark: rgba($text-primary-main, 0.6);
+
+$text-tertiary-light: rgba(0, 0, 0, 0.5);
+$text-tertiary-main: rgba(0, 0, 0, 0.5);
+$text-tertiary-dark: rgba(0, 0, 0, 0.5);
+
+$text-primary-invert-light: #ffffff;
+$text-primary-invert-main: #ffffff;
+$text-primary-invert-dark: #ffffff;
+
+$text-secondary-invert-light: #ffffff;
+$text-secondary-invert-main: #ffffff;
+$text-secondary-invert-dark: #ffffff;
+
+/* border colors */
+
+$border-primary-light: #000000;
+$border-primary-main: #000000;
+$border-primary-dark: #000000;
+
+$border-secondary-light: #ffffff;
+$border-secondary-main: #ffffff;
+$border-secondary-dark: #ffffff;

@@ -1,0 +1,51 @@
+{
+  "validations": {
+    "field-error_required": "Please fill out this field",
+    "field-error_email": "Field must be a valid email"
+  },
+  "errors": {
+    "default": "Something went wrong"
+  },
+  "notification": {
+    "default-title-success": "Success",
+    "default-title-error": "Error",
+    "default-title-warning": "Warning",
+    "default-title-info": "Info",
+    "default-title-default": "Just a message",
+    "default-message-success": "Action successful",
+    "default-message-error": "Something went wrong",
+    "default-message-warning": "Something you are doing is not recommended",
+    "default-message-info": "Something is happening. Just want you to know that",
+    "default-message-default": "Just a message"
+  },
+  "hero-banner": {
+    "title": "Freedom tool",
+    "subtitle": "Application for anonymous voting in the 2024 presidential elections",
+    "timer-title": "Voting begins:",
+    "disabled-msg": "Coming soon!"
+  },
+  "how-to": {
+    "title": "How to use",
+    "step-1-title": "Secure Passport Scan",
+    "step-1-desc": "When you scan your passport, it creates a unique code (\"hash\") right on your device, ensuring no personal data ever leaves your phone for complete privacy.",
+
+    "step-2-title": "Creating a Unique Voting Pass",
+    "step-2-desc": "The system generates a special 'voting pass' for you, keeping your identity private and preventing multiple votes.",
+
+    "step-3-title": "Anonymous Voting",
+    "step-3-desc": "Cast your vote anonymously; it's securely recorded on the blockchain, making it tamper-proof and non traceable. ",
+
+    "step-4-title": "Transparent Results",
+    "step-4-desc": "Once voting ends, results are available on the blockchain for anyone to see, ensuring immutability and no single-party control.",
+
+    "more-link": "Learn More"
+  },
+  "invitation": {
+    "title": "Join the territory of freedom",
+    "link-btn": "Discord",
+    "disabled-msg": "Coming soon!"
+  },
+  "tech-doc": {
+    "back-link": "Back"
+  }
+}
