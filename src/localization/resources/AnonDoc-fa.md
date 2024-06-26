@@ -1,410 +1,271 @@
-# Freedom tools
-## Solution for electronic voting
+# ابزارهای آزادی
+## راه حل برای رای‌گیری الکترونیکی
 
-Jan 2024
+ژانویه ۲۰۲۴
 
-***Abstract.*** This paper presents an in-depth examination of
-sophisticated methodologies and technological frameworks essential for constructing a robust digital voting system. Our
-comprehensive analysis encompasses several critical stages: establishing individualized voter profiles utilizing
-biometric passport data, generating and verifying eligibility credentials, and implementing Verifiable Credentials for
-authentication. Furthermore, we delve into the intricacies of polling creation, the compilation of voter registries,
-the complexities of the voting procedure, and the methodologies for result calculation. Additionally, we offer a
-detailed discourse on security assertions and assumptions to ensure the utmost integrity and security throughout the
-voting process.
+***چکیده.*** این مقاله یک بررسی عمیق از روش‌ها و چارچوب‌های تکنولوژیکی پیشرفته‌ای که برای ساخت یک سیستم رای‌گیری دیجیتال قوی ضروری است، ارائه می‌دهد. تحلیل جامع ما شامل چندین مرحله حیاتی است: ایجاد پروفایل‌های شخصی رای‌دهندگان با استفاده از داده‌های گذرنامه بیومتریک، تولید و تأیید مدارک صلاحیت، و پیاده‌سازی مدارک قابل تأیید برای احراز هویت. علاوه بر این، ما به پیچیدگی‌های ایجاد نظرسنجی، تدوین فهرست‌های رای‌دهندگان، پیچیدگی‌های فرایند رای‌گیری، و روش‌های محاسبه نتایج پرداخته‌ایم. همچنین، ما یک بحث دقیق در مورد ادعاها و فرضیات امنیتی ارائه می‌دهیم تا اطمینان حاصل شود که تمامیت و امنیت فرآیند رای‌گیری در بالاترین سطح ممکن است.
 
-## Profile creation
-First of all, often, voting systems must rely on some infrastructure that is a source of information about the
-realness, uniqueness, and eligibility of voters. Finding a source that confirms all three properties is, in some cases
-(including during elections in authoritarian countries), quite tricky. Take state elections, for example:
+## ایجاد پروفایل
+اول از همه، سیستم‌های رای‌گیری اغلب باید به زیرساختی متکی باشند که منبعی از اطلاعات در مورد واقعی بودن، یکتایی و صلاحیت رای‌دهندگان باشد. یافتن منبعی که هر سه ویژگی را تأیید کند، در برخی موارد (از جمله در انتخابات در کشورهای استبدادی) بسیار دشوار است. به عنوان مثال انتخابات دولتی:
 
-- Uniqueness and realness can rely on biometric data or, more precisely, the methods and protocols that require them.
-- Eligibility (citizenship and age) is more difficult since the state is the only source confirming such parameters.
+- یکتایی و واقعی بودن می‌تواند به داده‌های بیومتریک یا به طور دقیق‌تر، روش‌ها و پروتکل‌هایی که به آن‌ها نیاز دارند، متکی باشد.
+- صلاحیت (شهروندی و سن) دشوارتر است زیرا دولت تنها منبع تأیید چنین پارامترهایی است.
 
-### Passport as user’s identity setup
-A biometric passport is a means of providing these three properties (we will touch on the issues of falsifying
-passports and the possibility of printing them by the state later) - it confirms citizenship (eligibility), stores
-information about a person’s age (eligibility), and through the passport number provides a unique identifier
-(uniqueness). Additionally, it stores information about the authority that issued it (realness). Moreover, the
-additional capabilities of biometric passports (including implementing some cryptographic methods) make it a fairly
-reliable tool for organizing elections.
+### گذرنامه به عنوان تنظیم هویت کاربر
+گذرنامه بیومتریک وسیله‌ای برای ارائه این سه ویژگی است (مسائل تقلب در گذرنامه‌ها و امکان چاپ آن‌ها توسط دولت را بعداً مورد بررسی قرار خواهیم داد) - این گذرنامه تأیید شهروندی (صلاحیت) را انجام می‌دهد، اطلاعات مربوط به سن فرد را ذخیره می‌کند (صلاحیت)، و از طریق شماره گذرنامه یک شناسه یکتا فراهم می‌کند (یکتایی). علاوه بر این، اطلاعات مربوط به مرجعی که آن را صادر کرده است (واقعیت) را ذخیره می‌کند. علاوه بر این، قابلیت‌های اضافی گذرنامه‌های بیومتریک (از جمله پیاده‌سازی برخی از روش‌های رمزنگاری) آن را به ابزاری نسبتاً قابل اعتماد برای سازماندهی انتخابات تبدیل می‌کند.
 
-Hereinafter, when we use the word passport, we refer to biometric passports implementing the Doc 9303 Machine Readable
-Travel Documents standard [1].
+از اینجا به بعد، وقتی کلمه گذرنامه را به کار می‌بریم، به گذرنامه‌های بیومتریکی که استاندارد Doc 9303 Machine Readable Travel Documents را پیاده‌سازی می‌کنند، اشاره داریم [1].
 
-### Reading and decrypting the data from the passport
-To create a profile, the user must submit or ‘read’ the passport information. To do this, the user can use his mobile
-phone with an RFID reader (hereinafter, we will use “**device**”). The reading process consists of the following steps:
-1. Generate keys for authentication and receiving the data from the passport.
-2. Receive data from the passport and verify it locally.
-3. Store the relevant passport data locally on the device.
+### خواندن و رمزگشایی داده‌ها از گذرنامه
+برای ایجاد یک پروفایل، کاربر باید اطلاعات گذرنامه را ارائه دهد یا 'بخواند'. برای این کار، کاربر می‌تواند از تلفن همراه خود با یک خواننده RFID استفاده کند (از اینجا به بعد، از کلمه "**دستگاه**" استفاده خواهیم کرد). فرایند خواندن شامل مراحل زیر است:
+1. تولید کلیدها برای احراز هویت و دریافت داده‌ها از گذرنامه.
+2. دریافت داده‌ها از گذرنامه و تأیید محلی آن‌ها.
+3. ذخیره محلی داده‌های مربوط به گذرنامه در دستگاه.
 
 <img src="images/tech-doc-en/1.png"/>
 
-For generating authentication keys and receiving data from the passport chip:
-1.  The device scans the passport's Machine Readable Zone (**MRZ**) using the camera.
-2. The device derives Document Basic Access Keys (**K<sub>**Enc**</sub>** and **K<sub>MAC</sub>**).
-3.  Devices with the chip authenticate keys to each other and derive KS<sub>Enc</sub>** and **KS<sub>MAC</sub>**
-    session keys.
+برای تولید کلیدهای احراز هویت و دریافت داده‌ها از تراشه گذرنامه:
+1. دستگاه منطقه قابل خواندن ماشین گذرنامه (**MRZ**) را با استفاده از دوربین اسکن می‌کند.
+2. دستگاه کلیدهای دسترسی پایه اسناد (**K<sub>**Enc**</sub>** و **K<sub>MAC</sub>**) را استخراج می‌کند.
+3. دستگاه‌های دارای تراشه کلیدها را به یکدیگر احراز هویت می‌کنند و کلیدهای نشست KS<sub>Enc</sub>** و **KS<sub>MAC</sub>** را استخراج می‌کنند.
 
-These keys authenticate and encrypt messages between the device and the passport. The device reads the data from the
-chip and verifies it locally:
-1.  The device reads the Document Security Object (**SOD**) and receives the Document Signer Certificate (**CDS**) -
-    the public key certificate of the party that issued and validated the passport.
-2.  The device builds and validates the certification path from the Trust Anchor (Certificate Authority) to CDS by the
-    verification of the signature that covers SOD.
-3.  The device reads Data Groups (**DGs**) from the passport.
-4.  The device verifies that all DGs are authentic and integer by comparing hashes of all DGs with corresponding hash
-    values in the SOD.
+این کلیدها پیام‌ها بین دستگاه و گذرنامه را احراز هویت و رمزگذاری می‌کنند. دستگاه داده‌ها را از تراشه می‌خواند و به صورت محلی تأیید می‌کند:
+1. دستگاه شیء امنیتی سند (**SOD**) را می‌خواند و گواهی امضاکننده سند (**CDS**) را دریافت می‌کند - گواهی کلید عمومی مرجعی که گذرنامه را صادر و تأیید کرده است.
+2. دستگاه مسیر تأیید را از مرجع اعتماد (مرجع گواهی) به CDS با تأیید امضایی که SOD را پوشش می‌دهد، ایجاد و تأیید می‌کند.
+3. دستگاه گروه‌های داده (**DGs**) را از گذرنامه می‌خواند.
+4. دستگاه تأیید می‌کند که همه DGها معتبر و کامل هستند با مقایسه هش همه DGها با مقادیر هش مربوطه در SOD.
 
-If all verifications are performed correctly - it means that the device scanned the valid passport, so the device
-stores the following list of data:
-1.  DG1: Personal Details. This includes the primary biographical information of the passport holder, such as name,
-    date of birth, nationality, and passport number. It reflects much of the information printed on the passport's data
-    page.
-2.  DG2: Facial photograph. This contains the portrait of the passport holder. In the future, it will be possible to
-    extend the protection method based on it with face recognition and ZKML proofs.
-3.  DG7: Signature/Image of Holder. This data group stores the scanned image of the passport holder’s signature.
-4.  DG15: Active Authentication Public Key. This includes the public key used for active authentication, a security
-    feature to prevent unauthorized copying of passport data.
-5.  Hash values of other DGs.
-6.  Signature of the Document that covers SOD (hash values of all DGs).
-7.  Document Signer Certificate (CDS).
+اگر همه تأییدیه‌ها به درستی انجام شود، به این معنی است که دستگاه گذرنامه معتبر را اسکن کرده است، بنابراین دستگاه لیست داده‌های زیر را ذخیره می‌کند:
+1. DG1: جزئیات شخصی. این شامل اطلاعات بیوگرافی اولیه دارنده گذرنامه مانند نام، تاریخ تولد، ملیت و شماره گذرنامه است. این اطلاعات بسیاری از اطلاعات چاپ شده در صفحه داده‌های گذرنامه را منعکس می‌کند.
+2. DG2: عکس چهره. این شامل پرتره دارنده گذرنامه است. در آینده، می‌توان روش حفاظت مبتنی بر آن را با تشخیص چهره و اثبات‌های ZKML گسترش داد.
+3. DG7: امضا/تصویر دارنده. این گروه داده تصویر اسکن شده امضای دارنده گذرنامه را ذخیره می‌کند.
+4. DG15: کلید عمومی احراز هویت فعال. این شامل کلید عمومی است که برای احراز هویت فعال استفاده می‌شود، یک ویژگی امنیتی برای جلوگیری از کپی غیرمجاز داده‌های گذرنامه.
+5. مقادیر هش سایر DGها.
+6. امضای سند که SOD (مقادیر هش همه DGها) را پوشش می‌دهد.
+7. گواهی امضاکننده سند (CDS).
 
-Let’s note that in the future (or for some countries right now), the list of biometric data groups can be extended;
-DG2 and DG7 (the portrait and the photo of a physical signature) are currently the most supportable biometrics in
-passports.
+بیایید توجه کنیم که در آینده (یا برای برخی کشورها هم اکنون)، لیست گروه‌های داده بیومتریک می‌تواند گسترش یابد؛ DG2 و DG7 (پرتره و عکس امضای فیزیکی) در حال حاضر بیشترین حمایت را در گذرنامه‌ها دارند.
 
-All actions within this process are performed locally, without access to the Internet (the certificate path can also be
-verified on the device if the application stores the set of valid certificates of Trust Anchors). No personal data is
-shared anywhere or accessible to outside parties.
+تمامی اقدامات در این فرآیند به صورت محلی و بدون دسترسی به اینترنت انجام می‌شود (مسیر تأیید نیز می‌تواند در دستگاه تأیید شود اگر برنامه مجموعه‌ای از گواهی‌های معتبر مرجع‌های اعتماد را ذخیره کند). هیچ داده شخصی به هیچ جایی به اشتراک گذاشته نمی‌شود یا در دسترس طرف‌های خارجی قرار نمی‌گیرد.
 
-*Note. We have named this process “profile entering”, because the processes of registration, login, and recovery are
-absent. Users can enter their unique profile only using the biometric passport and only by reading data from it.*
+*توجه. ما این فرآیند را "ورود پروفایل" نامیده‌ایم، زیرا فرآیندهای ثبت‌نام، ورود و بازیابی وجود ندارند. کاربران می‌توانند پروفایل منحصربه‌فرد خود را فقط با استفاده از گذرنامه بیومتریک و فقط با خواندن داده‌ها از آن وارد کنند.*
 
-### Creating the keys for digital identity
-Now, the user should generate the keypair for identity management. The proof of the user’s eligibility will be
-connected to the created identity, and keys will be used to confirm the user’s actions on smart contracts. You can
-imagine it as a grant issued by the user and delegating their representation rights on the web3 layer.
+### ایجاد کلیدها برای هویت دیجیتال
+حالا، کاربر باید جفت کلید را برای مدیریت هویت ایجاد کند. اثبات صلاحیت کاربر به هویت ایجاد شده متصل خواهد شد و کلیدها برای تأیید اقدامات کاربر بر روی قراردادهای هوشمند استفاده خواهند شد. شما می‌توانید آن را به عنوان یک گواهی صادر شده توسط کاربر و واگذاری حقوق نمایندگی آن‌ها در لایه وب3 تصور کنید.
 
-For the mentioned purposes (and for MITM protection), the user should confirm that the defined key is generated and
-controlled by them. And they again use a passport or a rather active authentication flow to make that possible.
+برای اهداف ذکر شده (و برای حفاظت از MITM)، کاربر باید تأیید کند که کلید تعریف شده توسط آن‌ها ایجاد و کنترل می‌شود. و دوباره از گذرنامه یا جریان احراز هویت فعال استفاده می‌کنند تا این امر ممکن شود.
 
-This flow consists of generating a challenge and signing it with a private key stored in a secure segment of the
-passport. The corresponding public key is located in DG15. Instead of a challenge, the user provides the generated DID
-and asks to sign it. You can think of this as a self-signed PK certificate signed using the passport’s secret.
+این جریان شامل تولید یک چالش و امضای آن با کلید خصوصی ذخیره شده در قسمت امن گذرنامه است. کلید عمومی مربوطه در DG15 قرار دارد. به جای چالش، کاربر شناسه DID تولید شده را ارائه می‌دهد و درخواست امضای آن را می‌کند. شما می‌توانید این را به عنوان یک گواهی PK خودامضا شده با استفاده از راز گذرنامه تصور کنید.
 
 <img src="images/tech-doc-en/2.png" />
 
-Thus, when transferring DID to an external consumer (identity provider or smart contract), the verifier will be sure
-that the user controls the keys to his identity. DID is generated based on the Iden3 standard[2].
+بنابراین، هنگام انتقال DID به یک مصرف‌کننده خارجی (ارائه‌دهنده هویت یا قرارداد هوشمند)، تأییدکننده مطمئن خواهد شد که کاربر کلیدهای هویت خود را کنترل می‌کند. DID بر اساس استاندارد Iden3 تولید می‌شود[2].
 
-### Generating the proof of eligibility
-Once a local voting profile has been created, it must be tied to publicly verifiable credentials, which on-chain
-contracts can verify without disclosing personal data. We define eligibility verification as follows:
-1.  Verifying that the passport was issued by one of the authorized authorities (SOD signature verification).
-2.  Checking that the DG1 group includes a field with a specific citizenship.
-3.  Checking that the DG1 group includes a field with a date of birth that meets the necessary criteria (18+).
-4.  Checking that the passport isn’t expired.
-5.  Verifying that DG1, which holds personal data, data and the DGs, which hold the biometric data are included in the
-    SOD.
-6.  Verifying that DG15 is included in the SOD and that the user has used the correct private key to sign the DID
-    (passport control).
+### تولید اثبات صلاحیت
+پس از ایجاد پروفایل رای‌گیری محلی، باید به مدارک قابل تأیید عمومی مرتبط شود که قراردادهای زنجیره‌ای می‌توانند آن را بدون افشای داده‌های شخصی تأیید کنند. ما تأیید صلاحیت را به شرح زیر تعریف می‌کنیم:
+1. تأیید اینکه گذرنامه توسط یکی از مقامات مجاز صادر شده است (تأیید امض
 
-All these checks can be performed on contracts, but some of the data will be published (and generating the
-corresponding proofs is a rather difficult task for user devices). Therefore, the user must contact one of the identity
-providers and satisfy the specified verification (however, without actually disclosing critical information).
+ای SOD).
+2. بررسی اینکه گروه DG1 شامل یک فیلد با شهروندی خاص است.
+3. بررسی اینکه گروه DG1 شامل یک فیلد با تاریخ تولدی است که معیارهای لازم را برآورده می‌کند (18+).
+4. بررسی اینکه گذرنامه منقضی نشده است.
+5. تأیید اینکه DG1 که داده‌های شخصی را نگه می‌دارد، داده‌ها و DGهایی که داده‌های بیومتریک را نگه می‌دارند در SOD گنجانده شده‌اند.
+6. تأیید اینکه DG15 در SOD گنجانده شده و کاربر از کلید خصوصی صحیح برای امضای DID استفاده کرده است (کنترل گذرنامه).
 
-To do this, the user selects one of the providers and sends them the following set of data:
-- DID + signature by the passport secret key.
-- Authentication public key (DG15).
-- DG1, DG2 and DG7 hashes.
-- The proof of DG1, DG2, DG7, and DG15 are included in SOD (all other hashes or zkp).
-- The zero-knowledge proof of citizenship is included in DG1.
-- The zero-knowledge proof that the user is older than 18: the defined date of birth in the DG1 is lower than some
-  threshold.
-- The zero-knowledge proof that the expiration date in DG1 isn’t met.
-- The signature of the SOD and Document Signer Certificate (CDS).
+همه این تأییدیه‌ها می‌توانند بر روی قراردادها انجام شوند، اما برخی از داده‌ها منتشر خواهند شد (و تولید اثبات‌های مربوطه برای دستگاه‌های کاربر کار بسیار دشواری است). بنابراین، کاربر باید با یکی از ارائه‌دهندگان هویت تماس بگیرد و تأیید مشخص شده را انجام دهد (البته بدون افشای اطلاعات حساس).
+
+برای این کار، کاربر یکی از ارائه‌دهندگان را انتخاب کرده و مجموعه داده‌های زیر را به آن‌ها ارسال می‌کند:
+- DID + امضا توسط کلید خصوصی گذرنامه.
+- کلید عمومی احراز هویت (DG15).
+- هش‌های DG1، DG2 و DG7.
+- اثبات اینکه DG1، DG2، DG7 و DG15 در SOD گنجانده شده‌اند (همه هش‌های دیگر یا zkp).
+- اثبات بدون دانش (zero-knowledge) اینکه شهروندی در DG1 گنجانده شده است.
+- اثبات بدون دانش (zero-knowledge) اینکه کاربر بالای 18 سال است: تاریخ تولد تعریف شده در DG1 کمتر از یک حد است.
+- اثبات بدون دانش (zero-knowledge) اینکه تاریخ انقضای DG1 منقضی نشده است.
+- امضای SOD و گواهی امضاکننده سند (CDS).
 
 <img src="images/tech-doc-en/3.png" />
 
-## Receiving the Verifiable Credential
-The Identity Provider starts the verification procedure when it receives the aforementioned dataset. If all checks
-(discussed above) were performed correctly - the Identity Provider issues the Verifiable Credential (**VC**) based on
-the W3C standards\[3\] to the user. VC consists of:
-- The Poseidon hash values of DG2 and DG7 hashes.
-- The signature of SOD generated by the certificate authority.
-- Document Signer Certificate (CDS).
-- Credential expiration date.
+## دریافت مدارک قابل تأیید
+وقتی ارائه‌دهنده هویت مجموعه داده مذکور را دریافت می‌کند، فرایند تأیید را آغاز می‌کند. اگر همه تأییدیه‌ها (که در بالا بحث شد) به درستی انجام شود، ارائه‌دهنده هویت مدارک قابل تأیید (**VC**) بر اساس استانداردهای W3C به کاربر صادر می‌کند. VC شامل موارد زیر است:
+- مقادیر هش Poseidon از هش‌های DG2 و DG7.
+- امضای SOD تولید شده توسط مرجع گواهی.
+- گواهی امضاکننده سند (CDS).
+- تاریخ انقضای گواهی.
 
 <img src="images/tech-doc-en/4.png" />
 
-This data is stored on the user’s device. At the same time, the identity provider stores:
-- SOD data
-- Poseidon hash values of DG2 and DG7 hashes
-- The signature of SOD is generated by the certificate authority.
-- Document Signer Certificate (CDS).
+این داده‌ها در دستگاه کاربر ذخیره می‌شوند. در همان زمان، ارائه‌دهنده هویت موارد زیر را ذخیره می‌کند:
+- داده‌های SOD
+- مقادیر هش Poseidon از هش‌های DG2 و DG7
+- امضای SOD تولید شده توسط مرجع گواهی.
+- گواهی امضاکننده سند (CDS).
 
-If state misbehavior occurs, this data can be used to prove it. The attack vectors and protection methods are
-discussed below (in the section with vote registration).
+اگر سوءرفتار دولتی رخ دهد، می‌توان از این داده‌ها برای اثبات آن استفاده کرد. وکتورهای حمله و روش‌های حفاظت در زیر (در بخش ثبت رای) بحث شده‌اند.
 
-As a basic platform for Verifiable Credential issuance - we propose to use the Rarimo protocol[4]. This protocol allows
-VCs to be issued with the ability to transfer them to the needed blockchain later. It’s a very important property because
-the voting organizer can have no idea where the final voting process will be performed but wants to allow users to be
-registered in advance. Rarimo allows the transfer of the global identity state by one crosschain message but not to
-transfer each VC separately. At the same time, the process is completely decentralized - only the needed quorum of Rarimo
-validators (threshold) must sign the message to confirm it on the destination network.
+به عنوان یک پلتفرم اساسی برای صدور مدارک قابل تأیید، ما پیشنهاد می‌کنیم از پروتکل Rarimo[4] استفاده کنید. این پروتکل اجازه می‌دهد مدارک قابل تأیید صادر شوند و بعداً بتوان آن‌ها را به بلاکچین مورد نیاز منتقل کرد. این ویژگی بسیار مهمی است زیرا سازمان دهنده رای‌گیری ممکن است ایده‌ای نداشته باشد که فرآیند نهایی رای‌گیری در کجا انجام خواهد شد اما می‌خواهد کاربران بتوانند از پیش ثبت‌نام کنند. Rarimo اجازه می‌دهد وضعیت هویت جهانی را با یک پیام بین‌زنجیره‌ای منتقل کند اما نه اینکه هر VC جداگانه منتقل شود. در عین حال، فرآیند کاملاً غیرمتمرکز است - تنها حد نصاب مورد نیاز از اعتبارسنجان Rarimo (آستانه) باید پیام را امضا کنند تا آن را در شبکه مقصد تأیید کنند.
 
-The mentioned approach allows for building voting pools in a flexible way by separating different processes and receiving
-the maximum value from combining technologies and networks (some of them can provide unique opportunities for organizing
-the voting procedure exactly on their technical stack - like grants, etc).
+رویکرد مذکور اجازه می‌دهد تا استخرهای رای‌گیری به صورت انعطاف‌پذیر ساخته شوند با جدا کردن فرآیندهای مختلف و دریافت حداکثر ارزش از ترکیب تکنولوژی‌ها و شبکه‌ها (برخی از آن‌ها می‌توانند فرصت‌های منحصر به فردی برای سازماندهی فرآیند رای‌گیری دقیقاً در پشته فنی خود ارائه دهند - مانند کمک‌های مالی، و غیره).
 
+## ایجاد استخر
 
-## Pool creation
+در این بخش، ما به بررسی چگونگی ایجاد یک نمونه استخر می‌پردازیم. منظور ما از نمونه، مجموعه‌ای از قراردادهایی است که به کاربران اجازه می‌دهد از فرآیند رای‌گیری عبور کنند، از ایجاد استخر پاداش برای نودها و ثبت‌نام در رجیستری رای‌گیری تا رای‌گیری ناشناس و محاسبه نتایج.
 
-In this section, we will look at how exactly a pool instance is created. By instance, we mean a set of contracts that
-allow users to go through the voting procedure, from creating relayer reward pools and registering in the voting
-registry to anonymous voting and calculating the results.
-
-### Components of the voting contract infrastructure
-Anyone can create a pool. To do so, you must call the pool factory method and pass the necessary parameters. Calling
-the method initiates the creation of 3 contract systems:
-1.  Contract for investment in voting (INV). It is needed to collect funds to compensate for the confirmation of user
-    transactions by independent proxy nodes.
-2.  Contract for registering voters in the pool (REG). It is needed to verify user ownership of the necessary VCs and
-    add an anonymous entity to the register of voters.
-3.  Voting Contract (VOT). It’s needed to send anonymous votes and count voting results.
+### اجزای زیرساخت قرارداد رای‌گیری
+هر کسی می‌تواند یک استخر ایجاد کند. برای این کار، باید متد کارخانه استخر را فراخوانی کنید و پارامترهای لازم را منتقل کنید. فراخوانی این متد ایجاد سه سیستم قرارداد را آغاز می‌کند:
+1. قرارداد سرمایه‌گذاری در رای‌گیری (INV). برای جمع‌آوری بودجه برای جبران تأیید تراکنش‌های کاربران توسط نودهای پروکسی مستقل لازم است.
+2. قرارداد ثبت‌نام رای‌دهندگان در استخر (REG). برای تأیید مالکیت کاربران از مدارک لازم و اضافه کردن یک موجودیت ناشناس به رجیستری رای‌دهندگان لازم است.
+3. قرارداد رای‌گیری (VOT). برای ارسال رای‌های ناشناس و شمارش نتایج رای‌گیری لازم است.
 
 <img src="images/tech-doc-en/5.png" />
 
-## Voting parameters
+## پارامترهای رای‌گیری
 
-To initiate the creation of contracts, you need to define the following parameters:
-1.  The time frame for the functioning of each of the contracts. It is important to understand that contracts are
-    involved in various voting stages and executed in the sequence INV-\>REG-\>VOT-\>INV. At the end of each stage, a
-    condition may block the contract from participating in the next stage.
-2.  The total number of voters (maximum) and **minimal acceptable threshold** - the minimum threshold of the total
-    number of voters; upon reaching the number of registrations, a decision will be made (automatically) to vote. The
-    minimum number of voters required to decide is also separately determined (the number of registered parties may exceed
-    the number of actual voters).
-3.  The estimated average cost of transactions interacting with contracts: registration in the pool and voting.
-4.  Relayers reward rate. This parameter can also be adjusted depending on the amount of investment in the INV and the
-    number of voters.
-5.  Voting and other options (including multiple choice options).
-6.  The list of trusted Identity Providers who can issue VCs to voters and confirm their eligibility.
-7.  The needed VC types (schemas).
+برای شروع ایجاد قراردادها، باید پارامترهای زیر را تعریف کنید:
+1. بازه زمانی برای عملکرد هر یک از قراردادها. مهم است که درک کنید که قراردادها در مراحل مختلف رای‌گیری شرکت می‌کنند و به ترتیب اجرا می‌شوند INV-\>REG-\>VOT-\>INV. در پایان هر مرحله، یک شرط می‌تواند قرارداد را از شرکت در مرحله بعدی مسدود کند.
+2. تعداد کل رای‌دهندگان (حداکثر) و **حداقل آستانه قابل قبول** - حداقل آستانه تعداد کل رای‌دهندگان؛ با رسیدن به تعداد ثبت‌نام‌ها، تصمیمی (به طور خودکار) برای رای‌گیری گرفته خواهد شد. حداقل تعداد رای‌دهندگان لازم برای تصمیم‌گیری نیز به طور جداگانه تعیین می‌شود (تعداد احزاب ثبت‌نام شده ممکن است بیش از تعداد رای‌دهندگان واقعی باشد).
+3. هزینه متوسط تخمینی تراکنش‌های تعامل با قراردادها: ثبت‌نام در استخر و رای‌گیری.
+4. نرخ پاداش نودها. این پارامتر می‌تواند بسته به میزان سرمایه‌گذاری در INV و تعداد رای‌دهندگان تنظیم شود.
+5. گزینه‌های رای‌گیری و سایر گزینه‌ها (از جمله گزینه‌های چندگانه).
+6. لیست ارائه‌دهندگان هویت معتمد که می‌توانند مدارک قابل تأیید به رای‌دهندگان صادر کنند و صلاحیت آن‌ها را تأیید کنند.
+7. نوع مدارک مورد نیاز (طرح‌ها).
 
-### Contracts initiating flow
-The softcap and hardcap values defined in the INV contract will be calculated depending on the set parameters. Upon
-reaching the launch date of the crowdfunding company, you can call the appropriate method in the INV contract and
-deposit the desired amount of funds. Funds will be automatically distributed between pools depending on the ratio of
-transaction costs.
+### جریان شروع قراردادها
+مقادیر softcap و hardcap تعریف شده در قرارداد INV بر اساس پارامترهای تنظیم شده محاسبه خواهند شد. با رسیدن به تاریخ شروع شرکت سرمایه‌گذاری جمعی، می‌توانید متد مناسب در قرارداد INV را فراخوانی کرده و مقدار دلخواهی از وجوه را واریز کنید. وجوه به طور خودکار بین استخرها توزیع خواهند شد بسته به نسبت هزینه‌های تراکنش.
 
-If, upon reaching the company's completion time, the softcap has not been reached, the contract for registration is
-not deployed, and the funds are returned to investors. If, at the time of completion of the company, the softcap was
-reached (or the hardcap was reached in advance), this initiates the creation of a REG contract.
+اگر با رسیدن به زمان تکمیل شرکت، softcap برآورده نشده باشد، قرارداد ثبت‌نام مستقر نمی‌شود و وجوه به سرمایه‌گذاران بازگردانده می‌شود. اگر در زمان تکمیل شرکت، softcap برآورده شده باشد (یا hardcap از پیش برآورده شده باشد)، این شروع ایجاد قرارداد REG را آغاز می‌کند.
 
-After the registration start date, users themselves (or using relayers) can call a method to add them to the voting
-list (the list is anonymous, but more on that later). At the same time, users define secret parameters that will allow
-them to prove in the future that they were added to the list. At this stage, the output of the registration process
-is a list of registered voters. Suppose the number of registered users does not exceed a certain minimal acceptable
-threshold. In that case, the deployment of the contract for the actual voting is rejected (for reasons that this may
-additionally affect the de-anonymization of users). However, depending on the number of confirmed transactions,
-relayers can refund funds from the INV contract.
+پس از تاریخ شروع ثبت‌نام، کاربران خود (یا با استفاده از نودها) می‌توانند متدی را برای افزودن آن‌ها به لیست رای‌دهندگان فراخوانی کنند (لیست ناشناس است، اما بیشتر در مورد آن بعداً). در عین حال، کاربران پارامترهای سری را تعریف می‌کنند که به آن‌ها اجازه می‌دهد در آینده ثابت کنند که به لیست اضافه شده‌اند. در این مرحله، خروجی فرآیند ثبت‌نام لیست رای‌دهندگان ثبت‌نام شده است. اگر تعداد کاربران ثبت‌نام شده از یک حداقل آستانه قابل قبول کمتر باشد، استقرار قرارداد برای رای‌گیری واقعی رد می‌شود (به دلایلی که ممکن است این به طور اضافی بر رفع ناشناس بودن کاربران تأثیر بگذارد). با این حال، بسته به تعداد تراکنش‌های تأیید شده، نودها می‌توانند وجوه را از قرارداد INV بازپرداخت کنند.
 
-The VOT contract is automatically deployed if the minimal acceptable threshold is reached. Using this contract, the
-user can already send the final vote with proof of registration. The same contract calculates the final voting results
-unless there is an option to disclose the results only after the voting procedure has been carried out (however, such a
-procedure requires a trusted setting of the threshold key for encrypting votes and is optional).
+قرارداد VOT به طور خودکار اگر حداقل آستانه قابل قبول برآورده شود، مستقر می‌شود. با
 
-### How does the user find the required pool?
-To provide the user with information about the voting pool, it is enough to provide the address of the master contract
-and the pool identifier (for example, in the form of a QR code). The application must support the correct interface
-for communication with appropriate contract methods.
+ استفاده از این قرارداد، کاربر می‌تواند رای نهایی را با اثبات ثبت‌نام ارسال کند. همان قرارداد نتایج نهایی رای‌گیری را محاسبه می‌کند، مگر اینکه گزینه‌ای برای افشای نتایج فقط پس از انجام فرآیند رای‌گیری وجود داشته باشد (با این حال، چنین فرآیندی نیاز به تنظیم کلید آستانه برای رمزگذاری آراء و اختیاری است).
 
-## Relayers
-In conditions where we want to combine the usage of decentralized systems and provide voting rights to every eligible
-person, there is a list of challenges we need to solve:
-1.  Users must perform auditable and protected actions that are timestamped and can not be deleted or modified. Now,
-    it’s possible with public blockchains (using transactions with appropriate smart contract calls).
-2.  Users don’t want (or can’t) to pay a transaction fee. Moreover, some users (the majority) don’t know about web3 -
-    installing MM and buying the native currency is an additional challenge for them.
-3.  Some services could send transactions instead of users (they can’t modify signatures or proof). Setuping the
-    single relayer service is a possible but unreliable solution (a high probability of DoS).
-4.  Allowing any interested party to relay users’ transactions is possible. But obviously, these relayers don’t want to
-    pay for someone else if it’s not profitable.
+### کاربر چگونه استخر مورد نیاز را پیدا می‌کند؟
+برای ارائه اطلاعات به کاربر در مورد استخر رای‌گیری، کافی است آدرس قرارداد اصلی و شناسه استخر را ارائه دهید (به عنوان مثال، به شکل یک کد QR). برنامه باید از رابط کاربری صحیح برای ارتباط با متدهای قرارداد مناسب پشتیبانی کند.
 
-While decentralized relayers seem promising, a critical question arises: can we build a scheme where proxy services
-receive some rewards or benefits when they confirm users’ transactions?
+## نودها
+در شرایطی که ما می‌خواهیم از سیستم‌های غیرمتمرکز استفاده کنیم و حقوق رای‌گیری را به هر فرد واجد شرایط ارائه دهیم، یک لیست از چالش‌هایی که باید حل کنیم وجود دارد:
+1. کاربران باید اقدامات قابل بازرسی و محافظت شده‌ای را انجام دهند که دارای برچسب زمانی هستند و نمی‌توان آن‌ها را حذف یا تغییر داد. اکنون، این با بلاکچین‌های عمومی ممکن است (با استفاده از تراکنش‌هایی با تماس‌های قرارداد هوشمند مناسب).
+2. کاربران نمی‌خواهند (یا نمی‌توانند) هزینه تراکنش را بپردازند. علاوه بر این، برخی از کاربران (اکثریت) درباره وب3 اطلاعاتی ندارند - نصب MM و خرید ارز بومی برای آن‌ها یک چالش اضافی است.
+3. برخی از خدمات می‌توانند تراکنش‌ها را به جای کاربران ارسال کنند (آن‌ها نمی‌توانند امضاها یا اثبات‌ها را تغییر دهند). راه‌اندازی یک سرویس نود تنها یک راه حل ممکن است اما قابل اعتماد نیست (احتمال بالای DoS).
+4. اجازه دادن به هر طرف علاقه‌مند برای انتقال تراکنش‌های کاربران امکان‌پذیر است. اما بدیهی است که این نودها نمی‌خواهند هزینه کسی دیگر را بپردازند اگر سودآور نباشد.
 
-At the same time, some organizations (we will call them **investors** below) could provide grants under the following
-conditions:
-- Investors must be interested in actions performed by end users (involving a big audience in some process, like
-  voting).
-- Investors must be sure that provided funds are distributed reasonably and proportionally to the involvement of
-  relayers.
-- Investors must be able to check that relayers receive rewards only for doing the right actions (confirming valid
-  transactions that call corresponding methods of some smart contract) and only after they confirm it.
+در حالی که نودهای غیرمتمرکز امیدوار کننده به نظر می‌رسند، یک سوال حیاتی مطرح می‌شود: آیا می‌توانیم یک طرح ایجاد کنیم که خدمات پروکسی برخی پاداش‌ها یا مزایا را دریافت کنند وقتی که تراکنش‌های کاربران را تأیید می‌کنند؟
 
-Investors, who function as crowdfunding in this context, are willing to provide financial support with the expectation
-of conducting a fair voting event. To address this challenge, it is imperative to devise a solution that benefits
-users, proxy services, and investors alike, ensuring each participant finds value within this interconnected cycle.
+در همان زمان، برخی سازمان‌ها (ما آن‌ها را **سرمایه‌گذاران** زیر خواهیم نامید) می‌توانند کمک‌های مالی تحت شرایط زیر ارائه دهند:
+- سرمایه‌گذاران باید علاقه‌مند به اقدامات انجام شده توسط کاربران نهایی باشند (درگیر کردن یک مخاطب بزرگ در برخی فرآیندها، مانند رای‌گیری).
+- سرمایه‌گذاران باید مطمئن باشند که وجوه ارائه شده به طور منطقی و متناسب با درگیری نودها توزیع می‌شود.
+- سرمایه‌گذاران باید بتوانند بررسی کنند که نودها فقط برای انجام اقدامات صحیح پاداش دریافت می‌کنند (تأیید تراکنش‌های معتبر که متدهای مربوط به برخی قراردادهای هوشمند را فراخوانی می‌کنند) و فقط پس از تأیید آن‌ها.
 
-Let’s see how it works as a component of our voting tools.
+سرمایه‌گذاران، که در این زمینه به عنوان سرمایه‌گذاری جمعی عمل می‌کنند، مایل به ارائه حمایت مالی با انتظار برگزاری یک رویداد رای‌گیری عادلانه هستند. برای حل این چالش، ضروری است یک راه حل ایجاد کنیم که به کاربران، خدمات پروکسی و سرمایه‌گذاران به طور یکسان سود ببخشد، اطمینان حاصل شود که هر شرکت‌کننده‌ای ارزش را در این چرخه متصل پیدا کند.
 
-### Relayers’ incentivizing
-Pre-requirements:
-- There is a voting event where we want a lot of voters (not only web3).
-- The voting contract exists on the public blockchain, and each transaction with the vote requires a fee payment.
-- We know the approximate number of users - “**EXPECTED_NUM_VOTERS**”.
-- We know the average vote price - “**AVG_VOTE_PRICE**”.
-  - The average vote price can be calculated as (amount of gas for the
-    vote) \* (average gas price for some time).
-  - In the case of big elections, it can affect the total performance of the particular network and increase the
-    average vote price (by competing for a place in the block).
-- Additionally, some multiplier could be set - it displays the profitability of confirming the particular vote by the
-  relayer “**INCENTIVE_COEFF**”.
+بیایید ببینیم چگونه این به عنوان یک مؤلفه از ابزارهای رای‌گیری ما کار می‌کند.
 
-The solution for relayers works the following way:
-1.  The process starts with creating the pool with rewards, which will be distributed between relayers. The following
-    parameters are used for the pool creation:
-  1.  Date and time where voting starts (or the date and time of registration procedure if it exists)
-  2.  Softcap = **EXPECTED_NUM_VOTERS \* AVG_VOTE_PRICE \* INCENTIVE_COEFF**
-    1.  The minimum amount of funds needed to start the voting process.
-  3.  Hardcap (if needed)
-    1.  The maximum amount of funds needed to start the voting process.
-  4.  Voting contract parameters (contract address, methods’ names, etc).
-2.  Then, investors can donate funds into the pool if they agree to all defined data. The donation process looks like a
-    crowd-investing campaign: the voting procedure starts only if the soft cap is reached. Funds are returned to investors'
-    accounts if the soft cap isn’t reached during the voting procedure.
+### انگیزه‌دهی به نودها
+پیش‌نیازها:
+- یک رویداد رای‌گیری وجود دارد که ما می‌خواهیم تعداد زیادی رای‌دهنده داشته باشیم (نه فقط وب3).
+- قرارداد رای‌گیری در بلاکچین عمومی وجود دارد و هر تراکنش با رای نیاز به پرداخت هزینه دارد.
+- ما تعداد تقریبی کاربران را می‌دانیم - "**تعداد رای‌دهندگان مورد انتظار**".
+- ما میانگین قیمت رای را می‌دانیم - "**قیمت متوسط رای**".
+  - قیمت متوسط رای می‌تواند به صورت (مقدار گاز برای رای) \* (میانگین قیمت گاز برای مدتی) محاسبه شود.
+  - در صورت انتخابات بزرگ، می‌تواند بر عملکرد کلی شبکه تأثیر بگذارد و قیمت متوسط رای را افزایش دهد (با رقابت برای جایگاه در بلاک).
+- به علاوه، می‌توان یک ضریب ضریب را تنظیم کرد - این ضریب نمایش‌دهنده سودآوری تأیید رای خاص توسط نود است "**ضریب انگیزه**".
+
+راه حل برای نودها به این شکل عمل می‌کند:
+1. فرایند با ایجاد استخر با پاداش‌ها آغاز می‌شود که بین نودها توزیع می‌شود. پارامترهای زیر برای ایجاد استخر استفاده می‌شوند:
+  1. تاریخ و زمانی که رای‌گیری آغاز می‌شود (یا تاریخ و زمان فرایند ثبت‌نام اگر وجود داشته باشد)
+  2. softcap = **تعداد رای‌دهندگان مورد انتظار \* قیمت متوسط رای \* ضریب انگیزه**
+    1. حداقل مقدار وجوه مورد نیاز برای شروع فرایند رای‌گیری.
+  3. hardcap (در صورت نیاز)
+    1. حداکثر مقدار وجوه مورد نیاز برای شروع فرایند رای‌گیری.
+  4. پارامترهای قرارداد رای‌گیری (آدرس قرارداد، نام‌های متدها، و غیره).
+2. سپس، سرمایه‌گذاران می‌توانند وجوه را به استخر اهدا کنند اگر با تمام داده‌های تعریف شده موافق باشند. فرآیند اهدا شبیه به یک کمپین سرمایه‌گذاری جمعی است: فرآیند رای‌گیری فقط در صورتی آغاز می‌شود که سقف نرم (softcap) برآورده شود. وجوه به حساب سرمایه‌گذاران بازگردانده می‌شود اگر سقف نرم در طول فرآیند رای‌گیری برآورده نشود.
 
 <img src="images/tech-doc-en/6.png" />
 
-3.  When the voting process starts, users generate valid votes (they can be anonymous) with signatures/proofs and send
-    them to relayers. They can send votes to predefined relayers they trust or send the proof to the network, where any
-    relayer can take it and finally submit it to the blockchain.
+3. هنگامی که فرآیند رای‌گیری آغاز می‌شود، کاربران رای‌های معتبر (می‌توانند ناشناس باشند) با امضاها/اثبات‌ها تولید می‌کنند و آن‌ها را به نودها ارسال می‌کنند. آن‌ها می‌توانند رای‌ها را به نودهای از پیش تعیین شده که به آن‌ها اعتماد دارند ارسال کنند یا اثبات را به شبکه ارسال کنند، جایی که هر نودی می‌تواند آن را بگیرد و در نهایت آن را به بلاکچین ارسال کند.
 
 > <img src="images/tech-doc-en/7.png" />
 
-4.  In these conditions, it’s not profitable for relayers to wait until they can receive MEV based on the cost of
-    transaction confirmation if the current fee is lower than the reward they receive from the investing pool (this amount
-    is clear and visible to everyone). Any node that sends the transaction - will receive the profit.
-  1.  Relayers can compete with each other - it’s OK. The most important thing - is the existence of at least one
-      node that can extract the value from the confirmed transaction.
-  2.  Potentially, relayers can agree, confirm only one transaction, and divide the revenue between all relayers
-      (without paying fees). Still, they can’t trust each other that someone will not confirm other transactions and not
-      increase their share in the pool.
-  3.  During the voting, there might be a point when submitting transactions for relayers becomes unprofitable as the
-      total pool rewards are lower than the total gas cost of transactions. Proxies might continue submitting
-      transactions to get bigger shares and decrease losses. But it’s better to have a basic **INCENTIVE_COEFF** that is
-      reasonable and calculated the proper way.
-  4.  Each proxy creates a strategy for how and when to send transactions to extract maximum value. But it’s better
-      not to wait - any confirmed transaction increases the share in the pool and potentially leads to higher rewards.
-5.  After the voting process has ended, the reward pool is shared among all accounts that have submitted transactions
-    during the voting procedure. The share size depends on the amount of submitted transactions.
-  1.  Each relayer must initiate the rewards claim, but the contract can automatically calculate which EOAs submitted
-      needed transactions.
+4. در این شرایط، برای نودها سودآور نیست که منتظر بمانند تا بتوانند MEV را بر اساس هزینه تأیید تراکنش دریافت کنند اگر هزینه فعلی کمتر از پاداشی باشد که از استخر سرمایه‌گذاری دریافت می‌کنند (این مقدار برای همه واضح و قابل مشاهده است). هر نودی که تراکنش را ارسال می‌کند - سود خواهد برد.
+  1. نودها می‌توانند با یکدیگر رقابت کنند - اشکالی ندارد. مهم‌ترین چیز - وجود حداقل یک نود است که می‌تواند ارزش را از تراکنش تأیید شده استخراج کند.
+  2. نودها می‌توانند توافق کنند، فقط یک تراکنش را تأیید کنند و درآمد را بین همه نودها تقسیم کنند (بدون پرداخت هزینه‌ها). اما نمی‌توانند به یکدیگر اعتماد کنند که کسی تراکنش‌های دیگر را تأیید نکند و سهم خود را در استخر افزایش ندهد.
+  3. در طول رای‌گیری، ممکن است نقطه‌ای وجود داشته باشد که ارسال تراکنش‌ها برای نودها غیرسودآور شود زیرا کل پاداش‌های استخر کمتر از کل هزینه گاز تراکنش‌ها است. پروکسی‌ها ممکن است همچنان به ارسال تراکنش‌ها ادامه دهند تا سهم بیشتری کسب کنند و ضررها را کاهش دهند. اما بهتر است یک ضریب انگیزه (INCENTIVE_COEFF) پایه‌ای داشته باشید که معقول باشد و به درستی محاسبه شود.
+  4. هر پروکسی یک استراتژی برای چگونگی و زمان ارسال تراکنش‌ها برای استخراج حداکثر ارزش ایجاد می‌کند. اما بهتر است منتظر نماند - هر تراکنش تأیید شده سهم در استخر را افزایش می‌دهد و به پاداش‌های بالاتری منجر می‌شود.
+5. پس از پایان فرآیند رای‌گیری، استخر پاداش بین تمام حساب‌هایی که تراکنش‌ها را در طول فرآیند رای‌گیری ارسال کرده‌اند تقسیم می‌شود. اندازه سهم به تعداد تراکنش‌های ارسال شده بستگی دارد.
+  1. هر نود باید درخواست پاداش‌ها را آغاز کند، اما قرارداد می‌تواند به طور خودکار محاسبه کند که کدام EOAs تراکنش‌های مورد نیاز را ارسال کرده‌اند.
 
 <img src="images/tech-doc-en/8.png" />
 
-Also, there is a general description of how the web3 operations can be refunded. But sometimes, the amount of
-transactions within some process is more significant than one. For example, freedom tools require:
-- Transaction for creation VC (potentially could be paid by identity providers).
-- Transaction for registration into the voting pool (should be sent by relayers).
-- Transaction with a vote (also should be sent by relayers).
+همچنین، یک توضیح کلی وجود دارد که چگونه عملیات وب3 می‌تواند بازپرداخت شود. اما گاهی اوقات، تعداد تراکنش‌ها در یک فرآیند بیشتر از یکی است. به عنوان
 
-The cost of transactions on steps is different, so dividing the pool into two sub-pools with the relation depending on
-the transaction types sent by relayers makes sense.
+ مثال، ابزارهای آزادی نیاز دارند:
+- تراکنش برای ایجاد VC (به طور بالقوه می‌تواند توسط ارائه‌دهندگان هویت پرداخت شود).
+- تراکنش برای ثبت‌نام در استخر رای‌گیری (باید توسط نودها ارسال شود).
+- تراکنش با رای (همچنین باید توسط نودها ارسال شود).
 
-In any way, the described approach isn’t a pill that replaces interaction between users and blockchains. It only opens
-doors for using blockchain capabilities by users who don’t use wallets and aren’t too much in the web3 area.
-Interestingly, each user can act as a relayer if they wish - in this case, they will also be refunded for their
-transactions.
+هزینه تراکنش‌ها در مراحل متفاوت است، بنابراین تقسیم استخر به دو زیر استخر با رابطه‌ای که بستگی به نوع تراکنش‌های ارسال شده توسط نودها دارد منطقی است.
 
-The relayers method strongly answers the difficulties faced in on-chain decentralized voting. It incorporates
-crowdfunding from investors to overcome user hesitation in covering transaction expenses. This approach establishes a
-minimum limit for voters, sets a flexible target for crowdfunding, and guarantees that the voting only starts when
-there is enough public backing. During the vote, participants send their transactions through intermediaries. The
-reward pool formed as a result is then shared according to the volume of transactions. This strategy effectively
-addresses transaction cost concerns while promoting greater involvement and innovation. It offers an attractive option
-for managing on-chain decentralized voting within the blockchain sphere.
+به هر حال، رویکرد توضیح داده شده یک قرص نیست که تعامل بین کاربران و بلاکچین‌ها را جایگزین کند. تنها درها را برای استفاده از قابلیت‌های بلاکچین توسط کاربران که از کیف پول‌ها استفاده نمی‌کنند و در منطقه وب3 نیستند، باز می‌کند. جالب است که هر کاربر می‌تواند به عنوان نود عمل کند اگر بخواهد - در این صورت نیز برای تراکنش‌های خود بازپرداخت خواهند شد.
 
-## Registration as a voter in the pool
-This procedure is intended to anonymize user votes subsequently - ultimately, no one can link adding transactions to
-the voting list with transactions with votes[5]. To add a user to the registry, follow these steps:
-1.  The user generates **Nullifier** and **Secret** - two private values.
-2.  The user calculates **Identifier** = Poseidon(Nullifier, Secret).
-3.  The user sends proof that they have a right to vote (valid and not expired Verifiable Credential) and the list of
-    the following data:
-  1.  The Poseidon hash values of DG2 and DG7 hashes. This data is required to check the user's uniqueness and can be
-      used as fraud-proof if somebody wants to corrupt the user’s vote.
-  2.  The proof of knowledge of DG2 and DG7 hash values. For that user must use the data from the passport’s SOD.
-  3.  The signature of SOD is generated by the certificate authority.
-  4.  Document Signer Certificate (CDS).
-4.  The user provides an Identifier, which is added to the incremental Merkle Tree list (if all verifications are
-    passed).
-5.  The Root of the Merkle tree is being updated.
+روش نودها به سختی به مشکلات مواجه شده در رای‌گیری غیرمتمرکز زنجیره‌ای پاسخ می‌دهد. این شامل سرمایه‌گذاری جمعی از سرمایه‌گذاران برای غلبه بر تردید کاربران در پوشش هزینه‌های تراکنش است. این رویکرد حداقل حد رای‌دهندگان را تعیین می‌کند، هدف سرمایه‌گذاری جمعی انعطاف‌پذیر را تنظیم می‌کند و اطمینان می‌دهد که رای‌گیری تنها زمانی شروع می‌شود که حمایت عمومی کافی وجود دارد. در طول رای، شرکت‌کنندگان تراکنش‌های خود را از طریق واسطه‌ها ارسال می‌کنند. استخر پاداش تشکیل شده به این ترتیب بر اساس حجم تراکنش‌ها به اشتراک گذاشته می‌شود. این استراتژی به طور مؤثر مسائل هزینه تراکنش را حل می‌کند و در عین حال مشارکت و نوآوری بیشتری را ترویج می‌دهد. این یک گزینه جذاب برای مدیریت رای‌گیری غیرمتمرکز زنجیره‌ای در حوزه بلاکچین ارائه می‌دهد.
+
+## ثبت‌نام به عنوان رای‌دهنده در استخر
+این روش برای ناشناس‌سازی رای‌های کاربران بعدی طراحی شده است - در نهایت، هیچ‌کس نمی‌تواند افزودن تراکنش‌ها به لیست رای‌دهندگان را با تراکنش‌های رای‌ها مرتبط کند[5]. برای افزودن کاربر به رجیستری، مراحل زیر را دنبال کنید:
+1. کاربر **Nullifier** و **Secret** - دو مقدار خصوصی تولید می‌کند.
+2. کاربر **Identifier** = Poseidon(Nullifier, Secret) را محاسبه می‌کند.
+3. کاربر اثبات اینکه حق رای دارد (مدرک قابل تأیید معتبر و غیر منقضی) و لیست داده‌های زیر را ارسال می‌کند:
+  1. مقادیر هش Poseidon از هش‌های DG2 و DG7. این داده‌ها برای بررسی یکتایی کاربر لازم است و می‌توان از آن به عنوان اثبات تقلب استفاده کرد اگر کسی بخواهد رای کاربر را خراب کند.
+  2. اثبات دانش هش‌های DG2 و DG7. برای این کاربر باید از داده‌های SOD گذرنامه استفاده کند.
+  3. امضای SOD تولید شده توسط مرجع گواهی.
+  4. گواهی امضاکننده سند (CDS).
+4. کاربر شناسه‌ای را ارائه می‌دهد که به لیست درخت مرکل افزوده می‌شود (اگر همه تأییدیه‌ها گذرانده شوند).
+5. ریشه درخت مرکل به‌روزرسانی می‌شود.
 
 <img src="images/tech-doc-en/9.png" />
 
-At this stage, it should be noted that the user must save the Nullifier and Secret values on the device - knowing them
-will allow the user to vote at the final stage. It is important to note that after adding a leaf to the tree, the user
-can delete all data associated with his passport and even use a separate device that did not access his passport data
-for the final voting stage. All he needs for this is knowledge of Nullifier and Secret.
+در این مرحله، باید توجه داشت که کاربر باید مقادیر Nullifier و Secret را در دستگاه ذخیره کند - دانستن آن‌ها به کاربر اجازه می‌دهد در مرحله نهایی رای دهد. مهم است که توجه داشته باشید که پس از افزودن یک برگ به درخت، کاربر می‌تواند تمام داده‌های مرتبط با گذرنامه خود را حذف کند و حتی از یک دستگاه جداگانه که به داده‌های گذرنامه او دسترسی نداشته است برای مرحله نهایی رای‌دهی استفاده کند. تنها چیزی که برای این کار نیاز دارد، دانش Nullifier و Secret است.
 
-## Voting process
-To send the vote, the user needs to perform the following actions:
-1.  To form the ballot body, representing the selected voting option (Vote).
-2.  Calculate the Merkle branch for the leaf added due to user registration.
-3.  Calculate zero-knowledge proof:
-  1.  Nullifier, Merkle Root, and Vote as public inputs;
-  2.  Identifier, Merkle Branch, and Secret are private inputs.
-  3.  Verification logic is:
-    1.  Identifier == Poseidon(Nullifier, Secret);
-    2.  Identifier inclusion into the Merkle Tree with the corresponding Root using the Merkle Branch.
-4.  Aggregates the proof along with the body of the ballot and sends them to one of the relayers. The relayer packages
-    the proof ballot into a transaction and sends it to the network.
-5.  The VOT contract verifies the proof and takes into account the vote if it is correct.
+## فرآیند رای‌گیری
+برای ارسال رای، کاربر باید اقدامات زیر را انجام دهد:
+1. تشکیل بدن رای، که نشان دهنده گزینه انتخاب شده رای است (رای).
+2. محاسبه شاخه مرکل برای برگ افزوده شده به دلیل ثبت‌نام کاربر.
+3. محاسبه اثبات بدون دانش:
+  1. Nullifier، ریشه مرکل و رای به عنوان ورودی‌های عمومی؛
+  2. شناسه، شاخه مرکل و سری به عنوان ورودی‌های خصوصی.
+  3. منطق تأیید:
+    1. شناسه == Poseidon(Nullifier, Secret)؛
+    2. شامل شدن شناسه در درخت مرکل با ریشه مربوطه با استفاده از شاخه مرکل.
+4. اثبات را به همراه بدن رای تجمیع کرده و آن‌ها را به یکی از نودها ارسال می‌کند. نود اثبات رای را در یک تراکنش بسته‌بندی کرده و به شبکه ارسال می‌کند.
+5. قرارداد VOT اثبات را تأیید می‌کند و رای را در نظر می‌گیرد اگر درست باشد.
 
 <img src="images/tech-doc-en/10.png" />
 
-> Note: the Vote parameter does not participate directly in the verification process. It is used to add a constraint and
-bind the Vote to the proof. Changing the vote will make the whole proof invalid. Otherwise, malicious parties could
-intercept a proof and replace a Vote with a new one.
+> توجه: پارامتر رای به طور مستقیم در فرآیند تأیید شرکت نمی‌کند. از آن برای افزودن یک محدودیت و اتصال رای به اثبات استفاده می‌شود. تغییر رای باعث بی‌اعتباری کل اثبات خواهد شد. در غیر این صورت، طرف‌های مخرب می‌توانند یک اثبات را رهگیری کرده و رای را با یک رای جدید جایگزین کنند.
 
-## Calculation of results
-The voting results are stored by the corresponding smart contract state. Suppose the permissionless blockchain is used
-as an infrastructure for pool deployment. In that case, it means that anyone can check it and be sure that the final
-result corresponds to all performed transactions.
+## محاسبه نتایج
+نتایج رای‌گیری توسط حالت قرارداد هوشمند مربوطه ذخیره می‌شود. اگر بلاکچین بدون اجازه به عنوان زیرساخت برای استقرار استخر استفاده شود، این بدان معناست که هر کسی می‌تواند آن را بررسی کند و مطمئن باشد که نتیجه نهایی با تمام تراکنش‌های انجام شده مطابقت دارد.
 
-There is a mode that allows hiding voting results before it finishes. This approach requires a trusted setup between
-the quorum of participants. This quorum forms the public key for encrypting votes by the end users. When the voting
-procedure is finished, these parties can reveal their secrets, and anyone (if the threshold is met) can decrypt
-votes and calculate the final voting result.
+یک حالت وجود دارد که اجازه می‌دهد نتایج رای‌گیری قبل از پایان آن پنهان شود. این رویکرد نیاز به تنظیم اعتماد بین حد نصاب شرکت‌کنندگان دارد. این حد نصاب کلید عمومی برای رمزگذاری آراء توسط کاربران نهایی تشکیل می‌دهد. هنگامی که فرآیند رای‌گیری به پایان رسید، این طرف‌ها می‌توانند اسرار خود را فاش کنند و هر کسی (اگر حد نصاب برآورده شود) می‌تواند آراء را رمزگشایی کند و نتیجه نهایی رای‌گیری را محاسبه کند.
 
-If results are open constantly, the additional logic can be built based on the final state of the voting contract, for
-example, launching some action. An encryption option is also possible, but it requires a more complex solution, like
-homomorphic encryption.
+اگر نتایج به طور مداوم باز باشند، منطق اضافی بر اساس حالت نهایی قرارداد رای‌گیری ساخته می‌شود، به عنوان مثال، راه‌اندازی یک اقدام. گزینه رمزگذاری نیز ممکن است، اما نیاز به یک راه حل پیچیده‌تر، مانند رمزگذاری همومورفیک دارد.
 
-## Security claims and assumptions
-There is a list of security claims and assumptions Freedom tools include:
-- Only the person who physically owns a biometric passport can confirm the ownership of DID.
-- Only registered users on the REG contract (with appropriate tree leaves) can participate in the voting.
-- Registering and voting can be performed on separate devices (through exporting Nullifier and Secret). In this case,
-  the terminal for voting knows nothing about the person except they have a right to vote.
-- Users can’t vote twice using the same leaf in the tree.
-- Users can’t be registered in the pool using the same hashes of any biometry credential or with the same signature
-  from the certificate authority.
-- If the authentication key was replaced in the passport duplicate - the real owner can prove it and discredit the
-  certificate authority.
-- The vote can be sent only with the knowledge of the corresponding Nullifier and Secret. If the user lost it - there
-  is no way to recover the vote.
-- The vote can't be sent if the Nullifier or Secret is unknown.
-- It’s impossible to replace the ballot body in the vote while keeping the consistency of the proof.
-- There isn’t a way to track a connection between registration and voting if different EOAs / relayers were used.
-- Identity providers can’t recover users’ personal data without having access to appropriate databases (dictionary
-  attack).
+## ادعاها و فرضیات امنیتی
+لیستی از ادعاها و فرضیات امنیتی ابزارهای آزادی وجود دارد:
+- فقط شخصی که فیزیکی صاحب گذرنامه بیومتریک است می‌تواند مالکیت DID را تأیید کند.
+- فقط کاربران ثبت‌نام شده در قرارداد REG (با برگ‌های درخت مناسب) می‌توانند در رای‌گیری شرکت کنند.
+- ثبت‌نام و رای‌دهی می‌تواند بر روی دستگاه‌های جداگانه انجام شود (از طریق صادرات Nullifier و Secret). در این صورت، ترمینال رای‌دهی هیچ اطلاعی از شخص ندارد جز اینکه حق رای دارد.
+- کاربران نمی‌توانند دو بار با استفاده از همان برگ در درخت رای دهند.
+- کاربران نمی‌توانند در استخر با استفاده از هش‌های هرگونه اعتبار بیومتریک یا با امضای همان مرجع گواهی ثبت‌نام شوند.
+- اگر کلید احراز هویت در گذرنامه تکراری جایگزین شده باشد - مالک واقعی می‌تواند آن را اثبات کند و مرجع گواهی را بی‌اعتبار کند.
+- رای تنها با دانش Nullifier و Secret قابل ارسال است. اگر کاربر آن را از دست بدهد - هیچ راهی برای بازیابی رای وجود ندارد.
+- رای نمی‌تواند ارسال شود اگر Nullifier یا Secret ناشناخته باشد.
+- امکان جایگزینی بدن رای در رای وجود ندارد در حالی که اثبات سازگاری حفظ شود.
+- هیچ راهی برای ردیابی ارتباط بین ثبت‌نام و رای‌گیری وجود ندارد اگر EOAs / نودهای مختلف استفاده شوند.
+- ارائه‌دهندگان هویت نمی‌توانند داده‌های شخصی کاربران را بدون دسترسی به پایگاه‌های داده مناسب بازیابی کنند (حمله دیکشنری).
 
-## Links
+## لینک‌ها
 
 [1] Doc 9303 Machine Readable Travel Documents
 [2] Iden3
