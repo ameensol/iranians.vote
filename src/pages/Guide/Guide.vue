@@ -223,7 +223,7 @@ const scrollTo = (element: HTMLElement | undefined) => {
   gap: toRem(64) 0;
   padding-bottom: toRem(100);
 }
-.guide__steps-title{
+.guide__steps-title {
   font-family: 'Vazir';
 }
 .guide__header {

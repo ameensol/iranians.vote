@@ -120,61 +120,6 @@ const isAllQuestionsShown = ref(false)
 
 const plugins = [MarkdownItAnchor]
 
-const faqContentEnglish = [
-  {
-    head: 'Which passport can be used for voting?',
-    body: 'Only a biometric foreign passport, whose validity does not expire on the voting date, can be used for voting. A regular passport is not suitable due to the complex technical verification for authenticity.',
-  },
-  {
-    head: 'What passport data is processed to create a pass?',
-    body: 'Only the following data is used for voter registration: nationality; proof based on [Zero-Knowledge](https://en.wikipedia.org/wiki/Zero-knowledge_proof) that you are over 18 at the time of voting; issuer certificate. Your first name, last name, date of birth, and other personal data are not transmitted and remain only on your phone.',
-  },
-  {
-    head: 'What does anonymization of passport data mean?',
-    body: 'When obtaining a pass after registration for voting in the registration service, passport data is [hashed](https://en.wikipedia.org/wiki/Hash_function) using [cryptographic salt](https://en.wikipedia.org/wiki/Salt_(cryptography)). This allows for checking the uniqueness of the passport without the possibility of tracking the personal data of voters.',
-  },
-  {
-    head: 'Is it possible to find out if a person registered to vote by knowing their passport data?',
-    body: 'No, because the data is anonymized in the registration service (see above). Even having access to the entire database of passports, it is not possible to identify the registered voters.',
-  },
-  {
-    head: 'What is blockchain and why is it used as a voting platform?',
-    body: 'In simple terms, blockchain is a public decentralized database where the history of actions cannot be forged. Blockchain is well-suited for voting as it is nearly impossible to falsify votes, and the voting results are transparent and available to everyone.',
-  },
-  {
-    head: 'What kind of phone is suitable for passport scanning?',
-    body: 'To scan a passport, you need an Android or iOS phone with a built-in NFC chip (used for contactless payments in stores).',
-  },
-  {
-    head: 'Why point the camera at the passport page if the data is on the chip?',
-    body: 'Passport data on the chip is encrypted, and the application uses the code on the passport page with the photo for decryption.',
-  },
-  {
-    head: 'Can a passport be forged during scanning?',
-    body: 'To verify the authenticity of the passport, an open registry of passport issuers is used (a similar system is used in airports). To forge a passport, one would need access to the issuing authority.',
-  },
-  {
-    head: 'Is it possible to find out which candidate a specific anonymous user voted for?',
-    body: 'No, the user\'s vote is mixed with all other votes in the voting. Even the voter themselves will not be able to see who they voted for if they exit the application or delete it.',
-  },
-  {
-    head: 'Which blockchain is used for voting?',
-    body: 'The [Rarimo](https://docs.rarimo.com/) protocol is used for identification and anonymization of data, and any EVM blockchain can be used for voting.',
-  },
-  {
-    head: 'Is it possible to vote twice with one passport but different phones?',
-    body: 'No, because when registering to vote, the anonymous passport data is checked for uniqueness, so it is not possible to vote twice. Moreover, if you register to vote and lose access to your phone, you will not be able to participate in this vote from another phone.',
-  },
-  {
-    head: 'Who creates the voting and determines the list of candidates?',
-    body: 'The voting organizer has the right to post a ballot with candidates online, which will then be displayed to voters in the application. Malicious users will not be able to forge or spam the list of votes.',
-  },
-  {
-    head: 'Blockchain transactions have fees; who pays the fee for voting?',
-    body: 'Fees are paid by the proxy server (voting organizer), which forms transactions and sends them to the network. The server cannot reveal the identity of the voter or change their choice, as the voter\'s vote is protected by integration into cryptographic proof. Any attempt to modify the vote will automatically nullify this proof.',
-  },
-]
-
 const faqContent = [
   {
     head: 'کدام گذرنامه برای رای‌گیری قابل استفاده است؟',

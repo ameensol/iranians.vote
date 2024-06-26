@@ -5,7 +5,9 @@
       src="/branding/logo.svg"
       :alt="$config.APP_NAME"
     /> -->
-    <p class="app-logo__img">Iranians.vote</p>
+    <p class="app-logo__img">
+      {{ $t('Iranians.vote') }}
+    </p>
     <router-link class="app-logo__link" :to="{ name: $routes.app }" />
   </div>
 </template>
@@ -18,7 +20,7 @@
   flex-direction: column;
   position: relative;
 }
-.app-logo__img{
+.app-logo__img {
   font-weight: bold;
   font-size: 20px;
 }
