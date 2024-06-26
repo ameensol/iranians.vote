@@ -10,6 +10,7 @@ test/unit/coverage
 selenium-debug.log
 .eslintcache
 package-lock.json
+yarn.lock
 
 deprecated
 
