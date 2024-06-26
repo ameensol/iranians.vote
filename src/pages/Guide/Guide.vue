@@ -216,7 +216,6 @@ const scrollTo = (element: HTMLElement | undefined) => {
 
 <style scoped lang="scss">
 .guide {
-
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -228,7 +227,6 @@ const scrollTo = (element: HTMLElement | undefined) => {
   font-family: 'Vazir';
 }
 .guide__header {
-  
   width: 100%;
   position: relative;
 
@@ -246,7 +244,6 @@ const scrollTo = (element: HTMLElement | undefined) => {
 }
 
 .guide__header-content {
-  
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -265,7 +262,6 @@ const scrollTo = (element: HTMLElement | undefined) => {
 .guide__header-title {
   color: var(--text-primary-main);
   text-align: center;
-  
   font-size: toRem(48);
   font-style: normal;
   font-weight: 700;
@@ -275,7 +271,6 @@ const scrollTo = (element: HTMLElement | undefined) => {
 }
 
 .guide__header-subtitle {
-  
   color: var(--text-secondary-main);
   margin-bottom: toRem(24);
 }
@@ -287,7 +282,6 @@ const scrollTo = (element: HTMLElement | undefined) => {
 
 .guide__divider {
   width: 100%;
-  
   height: toRem(1);
   background: rgba(0, 0, 0, 0.1);
   margin-top: toRem(40);
@@ -315,7 +309,6 @@ const scrollTo = (element: HTMLElement | undefined) => {
 }
 
 .guide__title {
-  
   white-space: pre-line;
   text-align: center;
   font-size: toRem(32);

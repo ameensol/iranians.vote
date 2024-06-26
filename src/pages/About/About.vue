@@ -194,7 +194,6 @@ h2{
 }
 
 .about__content {
-
   display: flex;
   flex-direction: column;
   width: 80%;
@@ -211,7 +210,6 @@ h2{
 }
 
 .about__row {
-  
   display: flex;
   gap: toRem(48);
 
@@ -292,7 +290,6 @@ h2{
 }
 
 .about__desc-text {
-  
   line-height: 1.25;
   white-space: pre-line;
 
@@ -302,7 +299,6 @@ h2{
 }
 
 .about__desc-tip {
-  
   display: flex;
   align-items: center;
   background: rgba(var(--black-rgb), 0.05);
@@ -334,7 +330,6 @@ h2{
 
 .about__more {
   display: flex;
-  
   flex-direction: column;
   align-items: center;
   text-align: center;
@@ -344,7 +339,6 @@ h2{
   font-family: 'Vazir';
 }
 .about__icon-divider {
-  
   align-self: center;
   margin: -#{toRem(64)} 0;
 
@@ -352,7 +346,6 @@ h2{
 
   @include respond-to(small) {
     margin: -#{toRem(32)} 0;
-
     @include static-size(toRem(120));
   }
 }
